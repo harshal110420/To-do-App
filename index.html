@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+3M5n6f5v49po0Ek5B8N5B04C7p5fg/U5pqqZYjAYw5SlBfe/"
+      crossorigin="anonymous"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <title>Todo list</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="todo-app">
+        <div id="custom-alert" class="custom-alert">
+          <div class="custom-alert-content">
+            <h3>Alert</h3>
+            <p id="alert-message"></p>
+            <button id="close-alert">OK</button>
+          </div>
+        </div>
+        <h2>
+          To-Do App
+          <img src="images/icon.png" alt="" />
+          <div class="search-container">
+            <input
+              type="search"
+              id="search-input"
+              class="searchtask"
+              placeholder="Search Task"
+            />
+
+            <button class="search-button" onclick="searchtask()">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </h2>
+        <div class="row">
+          <input type="text" id="input-box" placeholder="Add your text" />
+          <button onclick="addtask()">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div id="editModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2>Edit Task</h2>
+              <input
+                type="text"
+                id="editedTask"
+                class="editedTaskinput"
+                placeholder="Edit your task"
+              />
+              <button id="saveEdit">Save</button>
+            </div>
+          </div>
+        </div>
+        <ul id="list-container">
+          <!-- <li class="checked">Task 1</li>
+          <li>Task 2</li>
+          <li>Task 3</li> -->
+        </ul>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
