@@ -2,121 +2,145 @@ const searchInput = document.getElementById("search-input");
 const inputBox = document.getElementById("input-box");
 const listcontainer = document.getElementById("list-container");
 
-// function to show and hide the custom alert
+const customAlert = document.getElementById("custom-alert");
+const alertMessage = document.getElementById("alert-message");
+const editModal = document.getElementById("editModal");
+const editedTaskInput = document.getElementById("editedTask");
+const saveEditButton = document.getElementById("saveEdit");
 
+// Function to show the custom alert
 function showAlert(message) {
-  const customAlert = document.getElementById("custom-alert");
-  const alertMessage = document.getElementById("alert-message");
   alertMessage.textContent = message;
   customAlert.style.display = "flex";
+  // console.log(`Alert: ${message}`);
 }
 
+// Function to hide the custom alert
 function hideAlert() {
-  const customAlert = document.getElementById("custom-alert");
   customAlert.style.display = "none";
+  // console.log("Alert hidden");
 }
 
-document.getElementById("close-alert").addEventListener("click", hideAlert);
+// Event listener to close the custom alert
+document.getElementById("close-alert").addEventListener("click", () => {
+  hideAlert();
+  // console.log("Alert closed");
+});
 
-// ADD TASK FUNCTION
-function addtask() {
-  if (inputBox.value === "") {
+// Function to add a task
+function addTask() {
+  const taskText = inputBox.value.trim();
+  if (taskText === "") {
     showAlert("Please enter a task");
-  } else {
-    let li = document.createElement("li");
-    li.innerHTML = `
-      <span class="task-text">${inputBox.value}</span>
-      <span class="task-actions">
-        <button class="edit-icon"><i class="fas fa-edit"></i></button>
-        <button class="delete-icon"><i class="fas fa-trash"></i></button>
-      </span>
-    `;
-
-    li.querySelector(".edit-icon").addEventListener("click", function () {
-      editTask(li);
-    });
-
-    li.querySelector(".delete-icon").addEventListener("click", function () {
-      li.remove();
-      savedata();
-    });
-
-    listcontainer.appendChild(li);
+    // console.log("Task not added: Empty input");
+    return;
   }
+
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span class="task-text">${taskText}</span>
+    <span class="task-actions">
+      <button class="edit-icon"><i class="fas fa-edit"></i></button>
+      <button class="delete-icon"><i class="fas fa-trash"></i></button>
+    </span>
+  `;
+
+  li.querySelector(".edit-icon").addEventListener("click", () => editTask(li));
+
+  li.querySelector(".delete-icon").addEventListener("click", () => {
+    li.remove();
+    saveData();
+    // console.log("Task deleted");
+  });
+
+  listcontainer.appendChild(li);
   inputBox.value = "";
-  savedata();
+  saveData();
+  // console.log(`Task added: ${taskText}`);
 }
 
-// SEARCH TASK FUNCTION
-function searchTask() {
+// Function to search for tasks
+function searchTasks() {
   const searchText = searchInput.value.toLowerCase();
 
-  const tasks = document.querySelectorAll("#list-container li");
-
-  tasks.forEach((task) => {
+  document.querySelectorAll("#list-container li").forEach((task) => {
     const taskText = task.querySelector(".task-text").textContent.toLowerCase();
-
     if (taskText.includes(searchText)) {
       task.style.display = "block";
     } else {
       task.style.display = "none";
     }
   });
+  // console.log(`Search: ${searchText}`);
 }
 
-searchInput.addEventListener("input", searchTask);
+// Event listener for input changes in the search bar
+searchInput.addEventListener("input", () => {
+  searchTasks();
+  // console.log("Search input changed");
+});
 
-// EDIT TASK FUNCTION
+// Function to edit a task
 function editTask(taskItem) {
   const taskText = taskItem.querySelector(".task-text");
 
-  const editedTaskInput = document.getElementById("editedTask");
+  // Check if the task is completed (has the "checked" class)
+  const isCompleted = taskItem.classList.contains("checked");
+  if (isCompleted) {
+    // console.log("Cannot edit a completed task.");
+    return; // Disable editing for completed tasks
+  }
 
   editedTaskInput.value = taskText.textContent;
-
-  const editModal = document.getElementById("editModal");
-
   editModal.style.display = "block";
 
   // Handle Save button click
-  const saveEditButton = document.getElementById("saveEdit");
-  saveEditButton.addEventListener("click", function () {
+  saveEditButton.addEventListener("click", () => {
     taskText.textContent = editedTaskInput.value;
     editModal.style.display = "none";
-    savedata();
+    saveData();
+    // console.log(`Task edited: ${editedTaskInput.value}`);
   });
 
   // Handle modal close button click
-  const closeModalButton = document.querySelector(".close");
-  closeModalButton.addEventListener("click", function () {
+  document.querySelector(".close").addEventListener("click", () => {
     editModal.style.display = "none";
+    // console.log("Edit modal closed");
   });
 }
 
-// DELETE HANDLER
-listcontainer.addEventListener(
-  "click",
-  function (e) {
-    if (e.target.tagName === "LI") {
-      e.target.classList.toggle("checked");
-      savedata();
-    } else if (e.target.classList.contains("edit-icon")) {
-      // Handle edit button click
-      const taskItem = e.target.parentElement.parentElement;
-      editTask(taskItem);
-    } else if (e.target.classList.contains("delete-icon")) {
-      // Handle delete button click with remove function
-      e.target.parentElement.parentElement.remove();
-      savedata();
-    }
-  },
-  false
-);
-function savedata() {
+// Function to save task data to localStorage
+function saveData() {
   localStorage.setItem("data", listcontainer.innerHTML);
+  // console.log("Data saved to localStorage");
 }
 
-function showTask() {
+// Function to display tasks from localStorage
+function showTasks() {
   listcontainer.innerHTML = localStorage.getItem("data");
+  // console.log("Tasks loaded from localStorage");
 }
-showTask();
+
+// Initialize the application
+showTasks();
+
+// Event delegation for list item actions (check, edit, delete)
+listcontainer.addEventListener("click", (e) => {
+  const target = e.target;
+  const taskItem = target.closest("li");
+
+  if (!taskItem) return;
+
+  if (target.tagName === "LI") {
+    taskItem.classList.toggle("checked");
+    saveData();
+    // console.log("Task checked");
+  } else if (target.classList.contains("edit-icon")) {
+    editTask(taskItem);
+    // console.log("Edit button clicked");
+  } else if (target.classList.contains("delete-icon")) {
+    taskItem.remove();
+    saveData();
+    // console.log("Task deleted");
+  }
+});
